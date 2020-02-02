@@ -1,0 +1,8 @@
+venv/
+env/
+.venv/
+.env/
+.vscode/
+__pycache__/
+*.log
+uploads/
