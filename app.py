@@ -11,7 +11,7 @@ from werkzeug.utils import secure_filename
 from .db import dbs as db
 
 UPLOAD_FOLDER = './uploads'
-SECRET_KEY = '\xbc\xe1,\xf08\xef\x7f\x05\xf7\x8dE>\x87v\xde+&\xa7\xfe\xd4[B.\xb0'
+SECRET_KEY = '\xbc\xe1,\xf08\xef\x7f\x05\xf7\x8dEs>\x87v\xde+&\xa7\xfe\xd4[B.\xb0'
 ALLOWED_EXTENSIONS = {'csv'}
 
 app = Flask(__name__)
@@ -31,6 +31,10 @@ def home():
     return 'Hello world!'
 
 
+index = 0
+flag = False
+paused = False
+data = []
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
     try:
@@ -49,18 +53,26 @@ def upload():
                 with open(filename, 'r') as fl:
                     spamreader = csv.reader(codecs.iterdecode(file, 'utf-8'))
                     row_count = sum(1 for row in fl)
-                    print('row_count', row_count, type(fl))
+                global data
+                global flag
+                global paused
+                global index
                 count = 0
                 data = []
                 head_list = []
-                global flag
                 flag = False
+                paused = False
                 print('Processing the Upload')
                 iterator = tqdm(spamreader, total=row_count)
                 for row in iterator:
                     time.sleep(0.1)
+                    index = count
                     if flag == True:
                         break
+                    if paused == True:
+                        index = count
+                        while paused:
+                            time.sleep(0.1)
                     if count == 0:
                         head_list = row
                         count += 1
@@ -80,7 +92,6 @@ def upload():
                                 'Message': 'Succesfully added file to database',
                                 'status': 'success'})
         else:
-            # return 'this is the upload api'
             return '''
             <!doctype html>
             <title>Upload new File</title>
@@ -93,6 +104,29 @@ def upload():
     except Exception as e:
         print('ERROR:', e)
         return f'ERROR: {e}'
+
+
+@app.route('/pause', methods=['GET', 'POST'])
+def pause():
+    global paused, index
+    paused = True
+    return f'paused at {index}'
+
+
+@app.route('/resume', methods=['GET', 'POST'])
+def resume():
+    global paused, index
+    paused = False
+    return f'resumed at {index}'
+
+
+@app.route('/terminate', methods=['GET', 'POST'])
+def terminate():
+    global flag
+    flag = True
+    return jsonify({'code': '0',
+                    'Message': 'Fail to process/Force stopped',
+                    'status': 'fail'})
 
 
 @app.route('/uploads/<filename>')
