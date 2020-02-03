@@ -35,6 +35,7 @@ index = 0
 flag = False
 paused = False
 data = []
+row_count = 0
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
     try:
@@ -50,13 +51,14 @@ def upload():
                 return redirect(request.url)
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
-                with open(filename, 'r') as fl:
-                    spamreader = csv.reader(codecs.iterdecode(file, 'utf-8'))
-                    row_count = sum(1 for row in fl)
                 global data
                 global flag
                 global paused
                 global index
+                global row_count
+                with open(filename, 'r') as fl:
+                    spamreader = csv.reader(codecs.iterdecode(file, 'utf-8'))
+                    row_count = sum(1 for row in fl)
                 count = 0
                 data = []
                 head_list = []
@@ -108,16 +110,16 @@ def upload():
 
 @app.route('/pause', methods=['GET', 'POST'])
 def pause():
-    global paused, index
+    global paused, index, row_count
     paused = True
-    return f'paused at {index}'
+    return f'paused at row {index+1}/{row_count}\n'
 
 
 @app.route('/resume', methods=['GET', 'POST'])
 def resume():
-    global paused, index
+    global paused, index, row_count
     paused = False
-    return f'resumed at {index}'
+    return f'resumed from row {index}/{row_count}\n'
 
 
 @app.route('/terminate', methods=['GET', 'POST'])
