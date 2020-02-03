@@ -65,3 +65,12 @@ curl --location --request POST 'http://127.0.0.1:5000/resume'
 ```sh
 resumed from row 12/26
 ```
+
+## Features/TODO
+
+- [x] Upload, pause/resume, terminate task APIs.
+- [x] Create Docker container deployable on Kubernetes.
+      (also available on Docker Hub: https://hub.docker.com/r/rajdeepbharati/uploooaad)
+- [ ] Support concurrent tasks.
+- [ ] User authentication (use flask session instead of python global variables).
+- [ ] Use a task queue (for example, Celery).

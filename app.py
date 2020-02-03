@@ -53,6 +53,8 @@ def upload():
                 return redirect(request.url)
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
+                # TODO: Use flask session instead of global variables
+                # That will enable a user-authenticated API.
                 global data
                 global flag
                 global paused
@@ -69,7 +71,7 @@ def upload():
                 print('Processing the Upload')
                 iterator = tqdm(spamreader, total=row_count)
                 for row in iterator:
-                    time.sleep(0.1)
+                    time.sleep(0.1)  # delay for each row of csv file
                     index = count
                     if flag == True:
                         break
