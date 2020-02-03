@@ -36,6 +36,8 @@ flag = False
 paused = False
 data = []
 row_count = 0
+
+
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
     try:
